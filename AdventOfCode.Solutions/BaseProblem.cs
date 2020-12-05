@@ -25,6 +25,8 @@ namespace AdventOfCode.Solutions
 
         public string PartTwoAnswer { get; protected set;  }
 
+        public virtual bool DisableActual { get; } = false;
+
         public void Solve(string name, string input)
         {
             PartOneAnswer = null;
@@ -49,7 +51,10 @@ namespace AdventOfCode.Solutions
 
             var actualInput = GetActualPuzzleInput();
 
-            Solve("Actual", actualInput);
+            if (!DisableActual)
+            {
+                Solve("Actual", actualInput);
+            }
         }
 
         private string GetActualPuzzleInput()
