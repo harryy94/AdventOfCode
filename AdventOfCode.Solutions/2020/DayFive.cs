@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace AdventOfCode.Solutions._2020
 {
@@ -28,7 +29,7 @@ BBFFBBFRLL"
 
             foreach (var rowCode in input.Split('\n'))
             {
-                var seatCode = DecodeSeat(rowCode, 127);
+                var seatCode = DecodeSeatBinary(rowCode);
                 //Console.WriteLine(seatCode);
                 if (seatCode != null)
                 {
@@ -59,6 +60,33 @@ BBFFBBFRLL"
             PartTwoAnswer = result.SeatId.ToString();
         }
 
+        private Seat DecodeSeatBinary(string seatCode)
+        {
+            if (string.IsNullOrEmpty(seatCode))
+                return null;
+
+            var sb = new StringBuilder();
+
+            foreach (var x in seatCode)
+            {
+                sb.Append(x == 'B' || x == 'R' ? 1 : 0);
+            }
+
+            var binaryString = sb.ToString();
+
+            return new Seat
+            {
+                Row = Convert.ToInt32(binaryString.Substring(0, 7), 2),
+                Column = Convert.ToInt32(binaryString.Substring(7, 3), 2)
+            };
+        }
+
+        /// <summary>
+        /// Old way before I realised you could just use Binary (eye-roll).
+        /// </summary>
+        /// <param name="seatCode"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
         private Seat DecodeSeat(string seatCode, int count)
         {
             if (string.IsNullOrEmpty(seatCode))
