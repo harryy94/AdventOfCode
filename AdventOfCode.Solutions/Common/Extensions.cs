@@ -15,5 +15,12 @@ namespace AdventOfCode.Solutions.Common
                 .Select(int.Parse)
                 .ToList();
         }
+
+        public static List<string> SplitByLine(this string input)
+        {
+            var list = input.Split('\n');
+
+            return list.Select(x => x.Replace("\r", "")).ToList();
+        }
     }
 }
