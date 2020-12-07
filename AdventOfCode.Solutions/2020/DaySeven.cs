@@ -74,20 +74,20 @@ dark violet bags contain no other bags."
             }
 
             var part1Result = FindBagRuleHits("shiny gold");
-            var part2Result = CountHowManyBagsWithin(GetOrNew("shiny gold"), 1);
+            var part2Result = CountHowManyBagsWithin(GetOrNew("shiny gold"));
 
             PartOneAnswer = part1Result.ToString();
             PartTwoAnswer = part2Result.ToString();
         }
 
-        private int CountHowManyBagsWithin(Bag bag, int qty)
+        private int CountHowManyBagsWithin(Bag bag)
         {
             var hitCount = 0;
 
             foreach (var item in bag.Rules)
             {
                 hitCount += item.Quantity;
-                hitCount += CountHowManyBagsWithin(item.Contains, item.Quantity) * item.Quantity;
+                hitCount += CountHowManyBagsWithin(item.Contains) * item.Quantity;
             }
 
             return hitCount;
@@ -106,7 +106,7 @@ dark violet bags contain no other bags."
                     continue;
                 }
 
-                if (TraverseAndLookForBagHits(rule.Value, bagName, 1))
+                if (TraverseAndLookForBagHits(rule.Value, bagName))
                 {
                     bagHits++;
                     hashSet.Add(rule.Key);
@@ -116,7 +116,7 @@ dark violet bags contain no other bags."
             return hashSet.Count;
         }
 
-        private bool TraverseAndLookForBagHits(Bag bag, string bagName, int count)
+        private bool TraverseAndLookForBagHits(Bag bag, string bagName)
         {
             if (bag.Name == bagName)
             {
@@ -125,7 +125,7 @@ dark violet bags contain no other bags."
 
             foreach (var item in bag.Rules)
             {
-                if (TraverseAndLookForBagHits(item.Contains, bagName, item.Quantity))
+                if (TraverseAndLookForBagHits(item.Contains, bagName))
                 {
                     return true;
                 }
@@ -134,7 +134,7 @@ dark violet bags contain no other bags."
             return false;
         }
 
-        private IDictionary<string, Bag> _bagRules = new Dictionary<string, Bag>();
+        private IDictionary<string, Bag> _bagRules;
 
         private Bag GetOrNew(string bagName)
         {
