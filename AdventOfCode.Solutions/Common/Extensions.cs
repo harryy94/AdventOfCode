@@ -16,6 +16,15 @@ namespace AdventOfCode.Solutions.Common
                 .ToList();
         }
 
+        public static List<long> GetLongList(this string input)
+        {
+            var list = input.Split('\n');
+
+            return list.Where(x => !string.IsNullOrEmpty(x))
+                .Select(long.Parse)
+                .ToList();
+        }
+
         public static List<string> SplitByLine(this string input)
         {
             var list = input.Split('\n');
