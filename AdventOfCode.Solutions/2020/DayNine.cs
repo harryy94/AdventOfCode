@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using AdventOfCode.Solutions.Common;
 
 namespace AdventOfCode.Solutions._2020
@@ -82,6 +83,9 @@ namespace AdventOfCode.Solutions._2020
             for (var i = 0; i < numbers.Count; i++)
             {
                 var sum = numbers[i];
+                var rangeList = new List<long>
+                    {numbers[i]};
+
                 for (var j = i + 1; j < numbers.Count; j++)
                 {
                     if (numbers[i] == numbers[j])
@@ -90,11 +94,11 @@ namespace AdventOfCode.Solutions._2020
                         continue;
                     }
                     sum += numbers[j];
-
+                    rangeList.Add(numbers[j]);
                     if (sum == previousCountCheck)
                     {
                         // Found range
-                        return numbers[i] + numbers[j - 1];
+                        return rangeList.Min() + rangeList.Max();
                     }
 
                     if (sum > previousCountCheck)
