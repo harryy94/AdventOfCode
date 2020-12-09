@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 
@@ -25,23 +26,33 @@ namespace AdventOfCode.Solutions
 
         public string PartTwoAnswer { get; protected set;  }
 
-        public virtual bool DisableActual { get; } = false;
+        public virtual bool RunActual { get; set; } = true;
+
+        public virtual bool RunExamples { get; set; } = true;
 
         public void Solve(string name, string input)
         {
             PartOneAnswer = null;
             PartTwoAnswer = null;
-            LoggingAction($"->Solve[{name}]");
+
+            LoggingAction($"->Solve({Year}, {Day}, {name})");
+
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
+
             DoSolve(input);
+
+            stopWatch.Stop();
+
             LoggingAction($"{name}. Part 1: {PartOneAnswer} | Part 2: {PartTwoAnswer}");
-            LoggingAction($"<-Solve[{name}]");
+            LoggingAction($"<-Solve({Year}, {Day}, {name}) - Execution time: {stopWatch.ElapsedMilliseconds}ms");
         }
 
         protected abstract void DoSolve(string input);
 
         public void Solve()
         {
-            if (ExampleInput != null)
+            if (ExampleInput != null && RunExamples)
             {
                 for (var i = 0; i < ExampleInput.Count; i++)
                 {
@@ -51,7 +62,7 @@ namespace AdventOfCode.Solutions
 
             var actualInput = GetActualPuzzleInput();
 
-            if (!DisableActual)
+            if (RunActual)
             {
                 Solve("Actual", actualInput);
             }

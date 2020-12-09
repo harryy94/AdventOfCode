@@ -66,8 +66,6 @@ namespace AdventOfCode.Solutions._2020
         private readonly int[] _preambleCounts = {25, 5, 25};
         private int _preambleCountIndex = 0;
 
-        public override bool DisableActual { get; } = false;
-
         protected override void DoSolve(string input)
         {
             var part1 = FindNonSummedNumber(input.GetLongList(), _preambleCounts[_preambleCountIndex]);
@@ -112,8 +110,6 @@ namespace AdventOfCode.Solutions._2020
 
         private long FindNonSummedNumber(List<long> numbers, int previousCountCheck)
         {
-            var index = 25;
-
             for (var i = previousCountCheck; i < numbers.Count; i++)
             {
                 var paired = CheckForSummingPairs(numbers, i - previousCountCheck, i);

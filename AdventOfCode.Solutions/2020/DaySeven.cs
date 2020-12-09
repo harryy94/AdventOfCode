@@ -34,8 +34,6 @@ dark blue bags contain 2 dark violet bags.
 dark violet bags contain no other bags."
             };
 
-        public override bool DisableActual { get; } = false;
-
         protected override void DoSolve(string input)
         {
             var lines = input.SplitByLine();

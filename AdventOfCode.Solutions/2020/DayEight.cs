@@ -12,9 +12,9 @@ namespace AdventOfCode.Solutions._2020
         }
 
         public override List<string> ExampleInput { get; }
-        = new List<string>
-        {
-            @"nop +0
+            = new List<string>
+            {
+                @"nop +0
 acc +1
 jmp +4
 acc +3
@@ -23,9 +23,7 @@ acc -99
 acc +1
 jmp -4
 acc +6"
-        };
-
-        public override bool DisableActual { get; } = false;
+            };
 
         protected override void DoSolve(string input)
         {
