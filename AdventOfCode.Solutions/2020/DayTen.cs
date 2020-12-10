@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using AdventOfCode.Solutions.Common;
 
 namespace AdventOfCode.Solutions._2020
@@ -59,8 +58,6 @@ namespace AdventOfCode.Solutions._2020
 3"
             };
 
-        public override bool RunActual { get; set; } = true;
-
         protected override void DoSolve(string input)
         {
             var joltAdapters = new List<long>
@@ -79,16 +76,16 @@ namespace AdventOfCode.Solutions._2020
                 [joltAdapters.Count - 2] = 1
             };
 
-            var part2Answer = Iterate(joltAdapters, 0, 0);
+            var part2Answer = Iterate(joltAdapters, 0);
 
             PartOneAnswer = DoPart1(joltAdapters).ToString();
-            PartTwoAnswer = _knownCounts[0].ToString();
+            PartTwoAnswer = part2Answer.ToString();
 
         }
 
         private IDictionary<int, long> _knownCounts;
 
-        private long Iterate(List<long> input, int index, int iteration)
+        private long Iterate(List<long> input, int index)
         {
             if (_knownCounts.ContainsKey(index))
             {
@@ -103,7 +100,7 @@ namespace AdventOfCode.Solutions._2020
 
                 if (input[index + i] - input[index] <= 3)
                 {
-                    newIterations += Iterate(input, index + i, 0);
+                    newIterations += Iterate(input, index + i);
                 }
             }
 
