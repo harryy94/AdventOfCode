@@ -59,59 +59,70 @@ namespace AdventOfCode.Solutions._2020
 3"
             };
 
-        public override bool RunActual { get; set; } = false;
+        public override bool RunActual { get; set; } = true;
 
         protected override void DoSolve(string input)
         {
-            var joltAdapters = input.GetIntList().OrderBy(x => x).ToList();
+            var joltAdapters = new List<long>
+            {
+                0 // The charger port
+            };
 
-            // Built in adapter
+            joltAdapters.AddRange(input.GetLongList().OrderBy(x => x).ToList());
+
+            // Built in adapter (always +3)
             joltAdapters.Add(joltAdapters.Max() + 3);
 
-            
+            _knownCounts = new Dictionary<int, long>
+            {
+                [joltAdapters.Count - 1] = 0,
+                [joltAdapters.Count - 2] = 1
+            };
+
+            var part2Answer = Iterate(joltAdapters, 0, 0);
 
             PartOneAnswer = DoPart1(joltAdapters).ToString();
-            PartTwoAnswer = FindIterations(joltAdapters).ToString();
+            PartTwoAnswer = _knownCounts[0].ToString();
+
         }
 
-        private int FindIterations(List<int> input)
+        private IDictionary<int, long> _knownCounts;
+
+        private long Iterate(List<long> input, int index, int iteration)
         {
-            var iterations = 1;
-            for (var i = 0; i < input.Count; i++)
+            if (_knownCounts.ContainsKey(index))
             {
-                var newIterations = 0;
-                for (var j = 1; j <= 3; j++)
+                return _knownCounts[index];
+            }
+
+            var newIterations = 0L;
+            for (var i = 1; i <= 3; i++)
+            {
+                if (index + i >= input.Count)
+                    continue;
+
+                if (input[index + i] - input[index] <= 3)
                 {
-                    if (i + j >= input.Count)
-                        continue;
-
-                    var diff = input[i + j] - input[i];
-
-                    if (diff >= 1 && diff <= 3)
-                    {
-                        newIterations++;
-                    }
-                }
-
-                if (newIterations > 0)
-                {
-                    iterations = newIterations * iterations;
+                    newIterations += Iterate(input, index + i, 0);
                 }
             }
 
-            return iterations;
+            _knownCounts.Add(index, newIterations);
+            return newIterations;
         }
 
-        private int DoPart1(List<int> joltAdapters)
+
+        private long DoPart1(List<long> joltAdapters)
         {
-            var dict = new Dictionary<int, int>
+            var dict = new Dictionary<long, long>
             {
+                {0, 0},
                 {1, 0},
                 {2, 0},
                 {3, 0}
             };
 
-            var joltage = 0;
+            var joltage = 0L;
 
             foreach (var joltAdapter in joltAdapters)
             {
