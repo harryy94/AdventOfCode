@@ -55,6 +55,8 @@ L.LLLLL.LL"
                 }
             }
 
+            var gridForPart2 = DeepCopyList(grid);
+
             var changedState = true;
             var timesRun = 0;
             while (changedState)
@@ -64,16 +66,28 @@ L.LLLLL.LL"
                 {
                     break;
                 }
-                changedState = ApplyRulesPart1(grid);
+                changedState = ApplyRules(grid, false);
             }
 
             var occupiedSeatsPart1 = grid.Sum(x => x.Count(c => c == GridState.Occupied));
 
-            PartOneAnswer = occupiedSeatsPart1.ToString();
-            PartTwoAnswer = "N.A";
-        }
+            changedState = true;
+            timesRun = 0;
+            while (changedState)
+            {
+                timesRun++;
+                if (timesRun > 10000)
+                {
+                    break;
+                }
+                changedState = ApplyRules(gridForPart2, true);
+            }
 
-        public override bool RunExamples { get; set; } = true;
+            var occupiedSeatsPart2 = gridForPart2.Sum(x => x.Count(c => c == GridState.Occupied));
+
+            PartOneAnswer = occupiedSeatsPart1.ToString();
+            PartTwoAnswer = occupiedSeatsPart2.ToString();
+        }
 
         private List<List<GridState>> DeepCopyList(List<List<GridState>> grid)
         {
@@ -87,7 +101,7 @@ L.LLLLL.LL"
             return newGrid;
         }
 
-        private bool ApplyRulesPart1(List<List<GridState>> grid)
+        private bool ApplyRules(List<List<GridState>> grid, bool useLos)
         {
             var changedState = false;
 
@@ -117,18 +131,31 @@ L.LLLLL.LL"
                     var adjacentSeats = 0;
                     foreach (var rule in noOccupiedSeatsDirectional)
                     {
-                        var xDiff = x + rule.X;
-                        var yDiff = y + rule.Y;
-
-                        if (yDiff < 0 || yDiff >= snapshotGrid.Count || xDiff < 0 || xDiff >= snapshotGrid[y].Count)
-                            continue;
-
-                        var gridToCheck = snapshotGrid[yDiff][xDiff];
-
-                        if (gridToCheck == GridState.Occupied)
+                        var offset = 0;
+                        do
                         {
-                            adjacentSeats++;
-                        }
+                            var xDiff = x + rule.X + (rule.X * offset);
+                            var yDiff = y + rule.Y + (rule.Y * offset);
+
+                            if (yDiff < 0 || yDiff >= snapshotGrid.Count || xDiff < 0 || xDiff >= snapshotGrid[y].Count)
+                                break;
+
+                            var gridToCheck = snapshotGrid[yDiff][xDiff];
+
+                            if (gridToCheck == GridState.Occupied)
+                            {
+                                adjacentSeats++;
+                                break;
+                            }
+
+                            if (gridToCheck == GridState.Empty)
+                            {
+                                break;
+                            }
+
+                            offset++;
+                        } while (useLos);
+                        
                     }
 
                     if (snapshotGrid[y][x] == GridState.Empty && adjacentSeats == 0)
@@ -137,7 +164,7 @@ L.LLLLL.LL"
                         grid[y][x] = GridState.Occupied;
                     }
                     
-                    if (snapshotGrid[y][x] == GridState.Occupied && adjacentSeats >= 4)
+                    if (snapshotGrid[y][x] == GridState.Occupied && ((useLos && adjacentSeats >= 5) || (!useLos && adjacentSeats >= 4)))
                     {
                         changedState = true;
                         grid[y][x] = GridState.Empty;
