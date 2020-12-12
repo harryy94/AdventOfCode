@@ -36,9 +36,77 @@ F11"
             }
 
             var part1 = DoPart1(instructions);
+            var part2 = DoPart2(instructions);
 
             PartOneAnswer = part1.ToString();
-            PartTwoAnswer = "N.A";
+            PartTwoAnswer = part2.ToString();
+        }
+
+        private int DoPart2(List<Instruction> instructions)
+        {
+            var x = 0;
+            var y = 0;
+
+            var waypointX = 10;
+            var waypointY = 1;
+
+            foreach (var instruction in instructions)
+            {
+                var directionToUse = instruction.InstructionType;
+
+                if (directionToUse == 'F')
+                {
+                    y += (waypointY * instruction.Number);
+                    x += (waypointX * instruction.Number);
+                }
+
+                else if (directionToUse == 'R' || directionToUse == 'L')
+                {
+                    var turnsToTake = instruction.Number / 90;
+
+                    for (var i = 0; i < turnsToTake; i++)
+                    {
+                        var curX = waypointX;
+                        var curY = waypointY;
+
+                        if (curX >= 0) // East becomes north or south
+                        {
+                            waypointY = directionToUse == 'R' ? -(curX) : curX;
+                        }
+                        if (curX < 0) // West becomes north or south
+                        {
+                            waypointY = directionToUse == 'R' ? -(curX) : (curX);
+                        }
+                        if (curY >= 0) // North becomes west or east
+                        {
+                            waypointX = directionToUse == 'R' ? curY : -(curY);
+                        }
+                        if (curY < 0) // South becomes west or east
+                        {
+                            waypointX = directionToUse == 'R' ? (curY) : -(curY);
+                        }
+                    }
+                }
+
+                else if (directionToUse == 'N')
+                {
+                    waypointY += instruction.Number;
+                }
+                else if (directionToUse == 'S')
+                {
+                    waypointY -= instruction.Number;
+                }
+                else if (directionToUse == 'E')
+                {
+                    waypointX += instruction.Number;
+                }
+                else if (directionToUse == 'W')
+                {
+                    waypointX -= instruction.Number;
+                }
+            }
+
+            return Math.Abs(x) + Math.Abs(y);
         }
 
         private int DoPart1(List<Instruction> instructions)
