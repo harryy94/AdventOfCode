@@ -16,8 +16,15 @@ namespace AdventOfCode.Solutions._2020
         = new List<string>
         {
             @"939
-7,13,x,x,59,x,31,19"
+7,13,x,x,59,x,31,19",
+            @"0
+67,x,7,59,61",
+            @"0
+67,7,x,59,61",
+            @"0
+1789,37,47,1889"
         };
+
         protected override void DoSolve(string input)
         {
             var inputSplitter = input.SplitByLine();
@@ -46,55 +53,30 @@ namespace AdventOfCode.Solutions._2020
             //    .ToList();
 
             PartOneAnswer = FindBestBus(timeReady, part1Input).ToString();
-            PartTwoAnswer = FindSubsequentBusses(busIncrements).ToString();
+            PartTwoAnswer = Calculate(busIncrements).ToString();
         }
 
-        private long FindSubsequentBusses(List<BusSchedule> busSchedules)
+        public long Calculate(List<BusSchedule> busSchedules)
         {
-            //for (var i = 0; i < busSchedules.Count; i++)
-            //{
-            //    busSchedules[i].IncrementUntilGreaterThan(100000000000000);
-            //}
-
-            var successfulRoutine = false;
-            var loopBreaker = 0L;
-            while (!successfulRoutine)
+            var timestamp = busSchedules.First().Schedule - busSchedules.First().Id;
+            var period = busSchedules.First().Schedule;
+            for (var busIndex = 1; busIndex <= busSchedules.Count; busIndex++)
             {
-                loopBreaker++;
-                if (loopBreaker > 100000000000)
+                while (busSchedules
+                    .Take(busIndex)
+                    .Any(a => (timestamp + a.Id) % a.Schedule != 0)
+                )
                 {
-                    Console.WriteLine("Infinite loop detected");
-                    break;
+                    timestamp += period;
                 }
 
-                busSchedules
-                    .OrderBy(x => x.Increment)
-                    .First()
-                    .IncreaseIncrement();
-                //for (var i = 0; i < busSchedules.Count; i++)
-                //{
-                //    busSchedules[i].IncreaseIncrement();
-                //}
-
-                successfulRoutine = true;
-
-                var baseIncrement = busSchedules[0].Increment;
-
-                for (var i = 1; i < busSchedules.Count; i++)
-                {
-                    if (busSchedules[i].Increment - busSchedules[i].Id != baseIncrement)
-                    {
-                        successfulRoutine = false;
-                        break;
-                    }
-                }
-
-                if (successfulRoutine)
-                {
-                    return baseIncrement;
-                }
+                period = busSchedules
+                    .Take(busIndex)
+                    .Select(t => t.Schedule)
+                    .Aggregate(LCM);
             }
-            return busSchedules[0].Increment;
+
+            return timestamp;
         }
 
         private long FindBestBus(int timeReady, List<long> busIncrements)
@@ -119,6 +101,22 @@ namespace AdventOfCode.Solutions._2020
 
             return (bestBusTime - timeReady) * bestBus;
         }
+
+        public long GCD(long a, long b)
+        {
+            while (b != 0)
+            {
+                long temp = b;
+                b = a % b;
+                a = temp;
+            }
+            return a;
+        }
+
+        public long LCM(long a, long b)
+        {
+            return (a / GCD(a, b)) * b;
+        }
     }
 
     public class BusSchedule
@@ -127,27 +125,11 @@ namespace AdventOfCode.Solutions._2020
         {
             Id = id;
             Schedule = schedule;
-            Increment = schedule;
         }
 
         public long Id { get; }
 
         public long Schedule { get; }
-
-        public long Increment { get; private set; }
-
-        public void IncreaseIncrement()
-        {
-            Increment += Schedule;
-        }
-
-        public void IncrementUntilGreaterThan(long value)
-        {
-            while (Increment < value)
-            {
-                IncreaseIncrement();
-            }
-        }
     }
 
 }
