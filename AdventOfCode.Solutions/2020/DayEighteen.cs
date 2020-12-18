@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using AdventOfCode.Solutions.Common;
 
 namespace AdventOfCode.Solutions._2020
@@ -26,75 +25,116 @@ namespace AdventOfCode.Solutions._2020
 
         protected override void DoSolve(string input)
         {
-            var sums = input.SplitByLine();
+            var sums = input.SplitByLine()
+                .Where(x => !string.IsNullOrEmpty(x))
+                .ToList();
 
-            var runningTotal = sums.Sum(CalculateSum);
+            //var runningTotal = sums.Sum(CalculateSum);
 
-            PartOneAnswer = runningTotal.ToString();
-            PartTwoAnswer = "N.A";
+            var part2OperatorList = new Dictionary<string, int>
+            {
+                {"+", 1},
+                {"*", 1}
+            };
+
+            var runningTotalPart1 = 0L;
+            foreach (var sum in sums)
+            {
+                runningTotalPart1+= SolveSum(sum, part2OperatorList);
+            }
+
+            part2OperatorList["+"] = 2;
+
+            var runningTotalPart2 = 0L;
+            foreach (var sum in sums)
+            {
+                runningTotalPart2 += SolveSum(sum, part2OperatorList);
+            }
+
+
+            PartOneAnswer = runningTotalPart1.ToString();
+            PartTwoAnswer = runningTotalPart2.ToString();
         }
 
-        private long CalculateSum(string sum)
+
+        private long SolveSum(string sum, Dictionary<string, int> operators)
         {
-            sum = sum.Replace(" ", "");
+            // Solve with Shunting Yard, output being Postfix, rather than Infix
 
-            var summingStack = new Stack<SummedScope>();
+            var postFix = EvaluateToPostfix(sum, operators);
 
-            summingStack.Push(new SummedScope(Operation.Add, 0));
-            var total = 0L;
-            var nextOperation = Operation.Add;
-            foreach (var item in sum)
+            var resultStack = new Stack<long>();
+
+            foreach (var item in postFix)
             {
-                if (item == '+')
+                switch (item)
                 {
-                    nextOperation = Operation.Add;
+                    case "*":
+                        resultStack.Push(resultStack.Pop() * resultStack.Pop());
+                        break;
+                    case "+":
+                        resultStack.Push(resultStack.Pop() + resultStack.Pop());
+                        break;
+                    default:
+                        resultStack.Push(long.Parse(item));
+                        break;
                 }
-                else if (item == '*')
-                {
-                    nextOperation = Operation.Multiply;
-                }
-                else if (item == '(')
-                {
-                    summingStack.Push(new SummedScope(nextOperation, total));
-                    total = 0;
-                    nextOperation = Operation.Add;
-                }
-                else if (item == ')')
-                {
-                    var oldScope = summingStack.Pop();
-                    var newTotal = oldScope.CurrentOperation == Operation.Add
-                        ? oldScope.RunningTotal + total
-                        : oldScope.RunningTotal * total;
+            }
 
-                    total = newTotal;
+            return resultStack.Pop();
+        }
+        //https://en.wikipedia.org/wiki/Shunting-yard_algorithm
+        private List<string> EvaluateToPostfix(string sum, Dictionary<string, int> operators)
+        {
+            var tokens = sum
+                .Replace("(", " ( ")
+                .Replace(")", " ) ")
+                .Split(new []{' '}, StringSplitOptions.RemoveEmptyEntries);
+
+            var stack = new Stack<string>();
+            var output = new List<string>();
+            foreach (var token in tokens)
+            {
+                if (operators.TryGetValue(token, out var op1))
+                {
+                    while (stack.Count > 0 && operators.TryGetValue(stack.Peek(), out var op2))
+                    {
+                        if (op1.CompareTo(op2) < 0)
+                        {
+                            output.Add(stack.Pop());
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+
+                    stack.Push(token);
+                }
+                else if (token == "(")
+                {
+                    stack.Push(token);
+                }
+                else if (token == ")")
+                {
+                    string top;
+                    while (stack.Count > 0 && (top = stack.Pop()) != "(")
+                    {
+                        output.Add(top);
+                    }
                 }
                 else
                 {
-                    var nextNumber = long.Parse(item.ToString());
-
-                    total = nextOperation == Operation.Add ? total + nextNumber : total * nextNumber;
+                    output.Add(token);
                 }
             }
 
-            return total;
-        }
-
-        struct SummedScope
-        {
-            public SummedScope(Operation operation, long runningTotal)
+            while (stack.Count > 0)
             {
-                CurrentOperation = operation;
-                RunningTotal = runningTotal;
+                output.Add(stack.Pop());
             }
-            public Operation CurrentOperation { get; }
 
-            public long RunningTotal { get; }
-        }
-
-
-        private enum Operation
-        {
-            Add, Multiply
+            return output;
         }
 
     }
