@@ -93,16 +93,16 @@ aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba"
             var rules = input.Rules.ToList();
             if (isPart2)
             {
-                rules.Add(new SeqRule
+                rules.Add(new SequenceRule
                 {
-                    Num = 8, Seq = new List<int>
+                    Id = 8, SubRules = new List<int>
                     {
                         42, 8
                     }
                 });
-                rules.Add(new SeqRule
+                rules.Add(new SequenceRule
                 {
-                    Num = 11, Seq = new List<int> {42, 11, 31}
+                    Id = 11, SubRules = new List<int> {42, 11, 31}
                 });
             }
             var matcher = new Matcher(rules);
@@ -123,7 +123,7 @@ aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba"
 
             public Matcher(IEnumerable<Rule> rules)
             {
-                _rules = rules.ToLookup(r => r.Num);
+                _rules = rules.ToLookup(r => r.Id);
             }
 
             public bool IsMatch(string input)
@@ -138,14 +138,14 @@ aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba"
             {
                 foreach (var rule in _rules[num])
                 {
-                    if (rule is LitRule lit)
+                    if (rule is LiteralRule lit)
                     {
                         foreach (var end in MatchLit(input, lit, pos))
                         {
                             yield return end;
                         }
                     }
-                    else if (rule is SeqRule seq)
+                    else if (rule is SequenceRule seq)
                     {
                         foreach (var end in MatchSeq(input, seq, pos, 0))
                         {
@@ -159,24 +159,24 @@ aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba"
                 }
             }
 
-            private IEnumerable<int> MatchLit(string input, LitRule lit, int pos)
+            private IEnumerable<int> MatchLit(string input, LiteralRule literal, int pos)
             {
-                if (string.CompareOrdinal(input, pos, lit.Lit, 0, lit.Lit.Length) == 0)
+                if (string.CompareOrdinal(input, pos, literal.LiteralValue, 0, literal.LiteralValue.Length) == 0)
                 {
-                    yield return pos + lit.Lit.Length;
+                    yield return pos + literal.LiteralValue.Length;
                 }
             }
 
-            private IEnumerable<int> MatchSeq(string input, SeqRule seq, int pos, int index)
+            private IEnumerable<int> MatchSeq(string input, SequenceRule sequence, int pos, int index)
             {
-                if (index == seq.Seq.Count)
+                if (index == sequence.SubRules.Count)
                 {
                     yield return pos;
                     yield break;
                 }
-                foreach (var end in Match(input, seq.Seq[index], pos))
+                foreach (var end in Match(input, sequence.SubRules[index], pos))
                 {
-                    foreach (var end2 in MatchSeq(input, seq, end, index + 1))
+                    foreach (var end2 in MatchSeq(input, sequence, end, index + 1))
                     {
                         yield return end2;
                     }
@@ -198,10 +198,10 @@ aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba"
                     var match = _regex.Match(line);
                     if (match.Groups[2].Success)
                     {
-                        result.Rules.Add(new LitRule
+                        result.Rules.Add(new LiteralRule
                         {
-                            Num = int.Parse(match.Groups[1].Value),
-                            Lit = match.Groups[2].Value
+                            Id = int.Parse(match.Groups[1].Value),
+                            LiteralValue = match.Groups[2].Value
                         });
                     }
                     else
@@ -218,10 +218,10 @@ aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba"
                         }
                         foreach (var seql in alt)
                         {
-                            result.Rules.Add(new SeqRule
+                            result.Rules.Add(new SequenceRule
                             {
-                                Num = int.Parse(match.Groups[1].Value),
-                                Seq = seql
+                                Id = int.Parse(match.Groups[1].Value),
+                                SubRules = seql
                             });
                         }
                     }
@@ -233,26 +233,25 @@ aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba"
             }
             return result;
         }
+    }
+    public abstract class Rule
+    {
+        public int Id { get; set; }
+    }
 
-        abstract class Rule
-        {
-            public int Num { get; set; }
-        }
+    public class LiteralRule : Rule
+    {
+        public string LiteralValue { get; set; }
+    }
 
-        class LitRule : Rule
-        {
-            public string Lit { get; set; }
-        }
+    public class SequenceRule : Rule
+    {
+        public List<int> SubRules { get; set; }
+    }
 
-        class SeqRule : Rule
-        {
-            public List<int> Seq { get; set; }
-        }
-
-        class Input
-        {
-            public List<Rule> Rules { get; } = new List<Rule>();
-            public List<string> Messages { get; } = new List<string>();
-        }
+    public class Input
+    {
+        public List<Rule> Rules { get; } = new List<Rule>();
+        public List<string> Messages { get; } = new List<string>();
     }
 }

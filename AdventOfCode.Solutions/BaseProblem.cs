@@ -35,7 +35,7 @@ namespace AdventOfCode.Solutions
             PartOneAnswer = null;
             PartTwoAnswer = null;
 
-            LoggingAction($"->Solve({Year}, {Day}, {name})");
+            LoggingAction($"-> Solve({Year}, {Day}, \"{name}\")");
 
             var stopWatch = new Stopwatch();
             stopWatch.Start();
@@ -44,8 +44,8 @@ namespace AdventOfCode.Solutions
 
             stopWatch.Stop();
 
-            LoggingAction($"{name}. Part 1: {PartOneAnswer} | Part 2: {PartTwoAnswer}");
-            LoggingAction($"<-Solve({Year}, {Day}, {name}) - Execution time: {stopWatch.ElapsedMilliseconds}ms");
+            LoggingAction($"Answers: [Part 1: {PartOneAnswer}] | [Part 2: {PartTwoAnswer}]");
+            LoggingAction($"<- Solve({Year}, {Day}, \"{name}\") - Execution time: {stopWatch.ElapsedMilliseconds}ms");
         }
 
         protected abstract void DoSolve(string input);

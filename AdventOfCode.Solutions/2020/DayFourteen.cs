@@ -34,7 +34,14 @@ mem[26] = 1"
 
             PartOneAnswer = Part1(inputLines).ToString();
 
-            PartTwoAnswer = Part2(inputLines).ToString();
+            if (inputLines[0] == "mask = XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X")
+            {
+                PartTwoAnswer = "Not valid for this example";
+            }
+            else
+            {
+                PartTwoAnswer = Part2(inputLines).ToString();
+            }
         }
 
         private long Part2(List<string> input)
