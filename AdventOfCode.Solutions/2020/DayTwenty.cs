@@ -329,83 +329,83 @@ Tile 3079:
             }
             return true;
         }
+    }
 
-        class Tile
+    public class Tile
+    {
+        private readonly string[] _image;
+
+        public Tile(int title, string[] image)
         {
-            private readonly string[] _image;
+            Id = title;
+            Size = image.Length;
 
-            public Tile(int title, string[] image)
+            _image = image;
+        }
+
+        private int _orientation;
+        public void ChangeOrientation()
+        {
+            _orientation++;
+            _orientation = _orientation % 8;
+        }
+
+        public int Id { get; }
+
+        public int Size { get; }
+
+        public char this[int row1, int col1]
+        {
+            get
             {
-                Id = title;
-                Size = image.Length;
-
-                _image = image;
-            }
-
-            private int _orientation;
-            public void ChangeOrientation()
-            {
-                _orientation++;
-                _orientation = _orientation % 8;
-            }
-
-            public int Id { get; }
-
-            public int Size { get; }
-
-            public char this[int row1, int col1]
-            {
-                get
+                for (var i = 0; i < _orientation % 4; i++)
                 {
-                    for (var i = 0; i < _orientation % 4; i++)
-                    {
-                        (row1, col1) = (col1, Size - 1 - row1);
-                    }
-
-                    if (_orientation % 8 >= 4)
-                    {
-                        col1 = Size - 1 - col1;
-                    }
-
-                    return _image[row1][col1];
-                }
-            }
-
-            public string GetSectionByRow(int row1)
-            {
-                return GetSection(row1, 0, 0, 1);
-            }
-
-            public string Top => GetSection(0, 0, 0, 1);
-
-            public string Right => GetSection(0, Size - 1, 1, 0);
-
-            public string Left => GetSection(0, 0, 1, 0);
-
-            public string Bottom => GetSection(Size - 1, 0, 0, 1);
-
-            public int GetHashCount()
-            {
-                var hashCount = 0;
-                for (var i = 0; i < Size; i++)
-                {
-                    hashCount += GetSectionByRow(i).Count(x => x == '#');
+                    (row1, col1) = (col1, Size - 1 - row1);
                 }
 
-                return hashCount;
+                if (_orientation % 8 >= 4)
+                {
+                    col1 = Size - 1 - col1;
+                }
+
+                return _image[row1][col1];
+            }
+        }
+
+        public string GetSectionByRow(int row1)
+        {
+            return GetSection(row1, 0, 0, 1);
+        }
+
+        public string Top => GetSection(0, 0, 0, 1);
+
+        public string Right => GetSection(0, Size - 1, 1, 0);
+
+        public string Left => GetSection(0, 0, 1, 0);
+
+        public string Bottom => GetSection(Size - 1, 0, 0, 1);
+
+        public int GetHashCount()
+        {
+            var hashCount = 0;
+            for (var i = 0; i < Size; i++)
+            {
+                hashCount += GetSectionByRow(i).Count(x => x == '#');
             }
 
-            private string GetSection(int row1, int col1, int row2, int col2)
+            return hashCount;
+        }
+
+        private string GetSection(int row1, int col1, int row2, int col2)
+        {
+            var sb = new StringBuilder();
+            for (var i = 0; i < Size; i++)
             {
-                var sb = new StringBuilder();
-                for (var i = 0; i < Size; i++)
-                {
-                    sb.Append(this[row1, col1]);
-                    row1 += row2;
-                    col1 += col2;
-                }
-                return sb.ToString();
+                sb.Append(this[row1, col1]);
+                row1 += row2;
+                col1 += col2;
             }
+            return sb.ToString();
         }
     }
 }
