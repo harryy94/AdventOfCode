@@ -67,12 +67,6 @@ iyr:2010 hgt:158cm hcl:#b6652a ecl:blu byr:1944 eyr:2021 pid:093154719"
                     // Ready for new passport
                     passportList.Add(passport);
 
-                    //Console.WriteLine("Passport added: ");
-                    //foreach (var item in passport)
-                    //{
-                    //    Console.WriteLine($"{item.Key} : {item.Value}");
-                    //}
-
                     passport = new Dictionary<string, string>();
 
                     continue;

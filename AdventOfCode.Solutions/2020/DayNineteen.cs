@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using AdventOfCode.Solutions.Common;
 
@@ -88,24 +87,26 @@ aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba"
             PartTwoAnswer = part2.ToString();
         }
 
-        private int Run(Input input, bool isPart2)
+        private int Run(RulesInput input, bool isPart2)
         {
             var rules = input.Rules.ToList();
             if (isPart2)
             {
-                rules.Add(new SequenceRule
+                rules.Add(new Rule
                 {
-                    Id = 8, SubRules = new List<int>
+                    Id = 8, 
+                    SubRules = new List<int>
                     {
                         42, 8
                     }
                 });
-                rules.Add(new SequenceRule
+                rules.Add(new Rule
                 {
-                    Id = 11, SubRules = new List<int> {42, 11, 31}
+                    Id = 11,
+                    SubRules = new List<int> {42, 11, 31}
                 });
             }
-            var matcher = new Matcher(rules);
+            var matcher = new RuleMatcher(rules);
             int count = 0;
             foreach (var msg in input.Messages)
             {
@@ -117,77 +118,10 @@ aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba"
             return count;
         }
 
-        class Matcher
+        private readonly Regex _regex = new Regex(@"^(\d+):(?: ""([^""]*)""|(?: ((?:\| )?)(\d+))+)\s*$");
+        private RulesInput ParseInput(string input)
         {
-            private ILookup<int, Rule> _rules;
-
-            public Matcher(IEnumerable<Rule> rules)
-            {
-                _rules = rules.ToLookup(r => r.Id);
-            }
-
-            public bool IsMatch(string input)
-            {
-                foreach (var end in Match(input, 0, 0))
-                {
-                    if (end == input.Length) return true;
-                }
-                return false;
-            }
-            private IEnumerable<int> Match(string input, int num, int pos)
-            {
-                foreach (var rule in _rules[num])
-                {
-                    if (rule is LiteralRule lit)
-                    {
-                        foreach (var end in MatchLit(input, lit, pos))
-                        {
-                            yield return end;
-                        }
-                    }
-                    else if (rule is SequenceRule seq)
-                    {
-                        foreach (var end in MatchSeq(input, seq, pos, 0))
-                        {
-                            yield return end;
-                        }
-                    }
-                    else
-                    {
-                        throw new ArgumentException(nameof(rule));
-                    }
-                }
-            }
-
-            private IEnumerable<int> MatchLit(string input, LiteralRule literal, int pos)
-            {
-                if (string.CompareOrdinal(input, pos, literal.LiteralValue, 0, literal.LiteralValue.Length) == 0)
-                {
-                    yield return pos + literal.LiteralValue.Length;
-                }
-            }
-
-            private IEnumerable<int> MatchSeq(string input, SequenceRule sequence, int pos, int index)
-            {
-                if (index == sequence.SubRules.Count)
-                {
-                    yield return pos;
-                    yield break;
-                }
-                foreach (var end in Match(input, sequence.SubRules[index], pos))
-                {
-                    foreach (var end2 in MatchSeq(input, sequence, end, index + 1))
-                    {
-                        yield return end2;
-                    }
-                }
-            }
-        }
-
-        private Regex _regex = new Regex(@"^(\d+):(?: ""([^""]*)""|(?: ((?:\| )?)(\d+))+)\s*$");
-        private Input ParseInput(string input)
-        {
-            var result = new Input();
+            var result = new RulesInput();
 
             var lines = input.Trim().SplitByLine();
 
@@ -198,7 +132,7 @@ aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba"
                     var match = _regex.Match(line);
                     if (match.Groups[2].Success)
                     {
-                        result.Rules.Add(new LiteralRule
+                        result.Rules.Add(new Rule
                         {
                             Id = int.Parse(match.Groups[1].Value),
                             LiteralValue = match.Groups[2].Value
@@ -206,22 +140,22 @@ aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba"
                     }
                     else
                     {
-                        var seq = new List<int>();
-                        var alt = new List<List<int>> { seq };
+                        var sequence = new List<int>();
+                        var alternateSequence = new List<List<int>> { sequence };
                         for (var i = 0; i < match.Groups[4].Captures.Count; i++)
                         {
                             if (match.Groups[3].Captures[i].Length != 0)
                             {
-                                alt.Add(seq = new List<int>());
+                                alternateSequence.Add(sequence = new List<int>());
                             }
-                            seq.Add(int.Parse(match.Groups[4].Captures[i].Value));
+                            sequence.Add(int.Parse(match.Groups[4].Captures[i].Value));
                         }
-                        foreach (var seql in alt)
+                        foreach (var altSeq in alternateSequence)
                         {
-                            result.Rules.Add(new SequenceRule
+                            result.Rules.Add(new Rule
                             {
                                 Id = int.Parse(match.Groups[1].Value),
-                                SubRules = seql
+                                SubRules = altSeq
                             });
                         }
                     }
@@ -234,22 +168,78 @@ aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba"
             return result;
         }
     }
-    public abstract class Rule
+    public class RuleMatcher
+    {
+        private ILookup<int, Rule> _rules;
+
+        public RuleMatcher(IEnumerable<Rule> rules)
+        {
+            _rules = rules.ToLookup(r => r.Id);
+        }
+
+        public bool IsMatch(string input)
+        {
+            foreach (var end in Match(input, 0, 0))
+            {
+                if (end == input.Length) return true;
+            }
+            return false;
+        }
+        private IEnumerable<int> Match(string input, int num, int pos)
+        {
+            foreach (var rule in _rules[num])
+            {
+                if (!string.IsNullOrEmpty(rule.LiteralValue))
+                {
+                    foreach (var end in MatchLiteral(input, rule, pos))
+                    {
+                        yield return end;
+                    }
+                }
+                else
+                {
+                    foreach (var end in MatchSequence(input, rule, pos, 0))
+                    {
+                        yield return end;
+                    }
+                }
+            }
+        }
+
+        private IEnumerable<int> MatchLiteral(string input, Rule literal, int pos)
+        {
+            if (string.CompareOrdinal(input, pos, literal.LiteralValue, 0, literal.LiteralValue.Length) == 0)
+            {
+                yield return pos + literal.LiteralValue.Length;
+            }
+        }
+
+        private IEnumerable<int> MatchSequence(string input, Rule sequence, int pos, int index)
+        {
+            if (index == sequence.SubRules.Count)
+            {
+                yield return pos;
+                yield break;
+            }
+            foreach (var end in Match(input, sequence.SubRules[index], pos))
+            {
+                foreach (var end2 in MatchSequence(input, sequence, end, index + 1))
+                {
+                    yield return end2;
+                }
+            }
+        }
+    }
+    public class Rule
     {
         public int Id { get; set; }
-    }
 
-    public class LiteralRule : Rule
-    {
         public string LiteralValue { get; set; }
-    }
 
-    public class SequenceRule : Rule
-    {
         public List<int> SubRules { get; set; }
     }
 
-    public class Input
+    public class RulesInput
     {
         public List<Rule> Rules { get; } = new List<Rule>();
         public List<string> Messages { get; } = new List<string>();

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using AdventOfCode.Solutions.Common;
 
 namespace AdventOfCode.Solutions._2020
@@ -46,12 +44,6 @@ namespace AdventOfCode.Solutions._2020
 
             var part1Input = busIncrements.Select(x => x.Schedule).ToList();
 
-            //var busIncrements = inputSplitter[1]
-            //    .Split(',')
-            //    .Where(x => x != "x")
-            //    .Select(int.Parse)
-            //    .ToList();
-
             PartOneAnswer = FindBestBus(timeReady, part1Input).ToString();
             PartTwoAnswer = Calculate(busIncrements).ToString();
         }
@@ -73,7 +65,7 @@ namespace AdventOfCode.Solutions._2020
                 period = busSchedules
                     .Take(busIndex)
                     .Select(t => t.Schedule)
-                    .Aggregate(LCM);
+                    .Aggregate(Lcm);
             }
 
             return timestamp;
@@ -102,7 +94,7 @@ namespace AdventOfCode.Solutions._2020
             return (bestBusTime - timeReady) * bestBus;
         }
 
-        public long GCD(long a, long b)
+        public long Gcd(long a, long b)
         {
             while (b != 0)
             {
@@ -113,9 +105,9 @@ namespace AdventOfCode.Solutions._2020
             return a;
         }
 
-        public long LCM(long a, long b)
+        public long Lcm(long a, long b)
         {
-            return (a / GCD(a, b)) * b;
+            return (a / Gcd(a, b)) * b;
         }
     }
 

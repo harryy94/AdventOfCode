@@ -21,15 +21,11 @@ namespace AdventOfCode.Solutions._2020
                 "((2 + 4 * 9) * (6 + 9 * 8 + 6) + 6) + 2 + 4 * 2"
             };
 
-        public override bool RunActual { get; set; } = true;
-
         protected override void DoSolve(string input)
         {
             var sums = input.SplitByLine()
                 .Where(x => !string.IsNullOrEmpty(x))
                 .ToList();
-
-            //var runningTotal = sums.Sum(CalculateSum);
 
             var part2OperatorList = new Dictionary<string, int>
             {

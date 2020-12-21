@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using AdventOfCode.Solutions.Common;
 
 namespace AdventOfCode.Solutions._2020
@@ -44,7 +41,8 @@ dark violet bags contain no other bags."
             {
                 if (string.IsNullOrEmpty(line))
                     continue;
-                var leftToRightSplit = line.Split(new string[] { "contain" }, StringSplitOptions.RemoveEmptyEntries);
+
+                var leftToRightSplit = line.Split(new[] { "contain" }, StringSplitOptions.RemoveEmptyEntries);
                 if (leftToRightSplit[1].Trim() == "no other bags.")
                 {
                     continue;

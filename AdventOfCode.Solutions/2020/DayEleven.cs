@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using AdventOfCode.Solutions.Common;
 
 namespace AdventOfCode.Solutions._2020
@@ -123,10 +122,6 @@ L.LLLLL.LL"
             {
                 for (var x = 0; x < grid[y].Count; x++)
                 {
-                    if (x == 92)
-                    {
-                      //  Console.WriteLine();
-                    }
                     //If a seat is empty (L) and there are no occupied seats adjacent to it, the seat becomes occupied.
                     var adjacentSeats = 0;
                     foreach (var rule in noOccupiedSeatsDirectional)

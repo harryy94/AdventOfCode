@@ -321,7 +321,7 @@ Tile 3079:
             {
                 for (var j = 0; j < rowLength; j++)
                 {
-                    if (pattern[j][i] == '#' && tile[row1 + j, col1 + i] != '#')
+                    if (pattern[j][i] == '#' && tile.GetGridItem(row1 + j, col1 + i) != '#')
                     {
                         return false;
                     }
@@ -354,22 +354,19 @@ Tile 3079:
 
         public int Size { get; }
 
-        public char this[int row1, int col1]
+        public char GetGridItem(int row1, int col1)
         {
-            get
+            for (var i = 0; i < _orientation % 4; i++)
             {
-                for (var i = 0; i < _orientation % 4; i++)
-                {
-                    (row1, col1) = (col1, Size - 1 - row1);
-                }
-
-                if (_orientation % 8 >= 4)
-                {
-                    col1 = Size - 1 - col1;
-                }
-
-                return _image[row1][col1];
+                (row1, col1) = (col1, Size - 1 - row1);
             }
+
+            if (_orientation % 8 >= 4)
+            {
+                col1 = Size - 1 - col1;
+            }
+
+            return _image[row1][col1];
         }
 
         public string GetSectionByRow(int row1)
@@ -401,7 +398,7 @@ Tile 3079:
             var sb = new StringBuilder();
             for (var i = 0; i < Size; i++)
             {
-                sb.Append(this[row1, col1]);
+                sb.Append(GetGridItem(row1, col1));
                 row1 += row2;
                 col1 += col2;
             }

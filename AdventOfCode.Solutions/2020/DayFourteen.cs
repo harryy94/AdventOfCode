@@ -26,7 +26,7 @@ mask = 00000000000000000000000000000000X0XX
 mem[26] = 1"
             };
 
-        private readonly Regex MemMatchRegex = new Regex(@"^mem\[([0-9]*)\] = ([0-9]*)$");
+        private readonly Regex _memMatchRegex = new Regex(@"^mem\[([0-9]*)\] = ([0-9]*)$");
 
         protected override void DoSolve(string input)
         {
@@ -61,7 +61,7 @@ mem[26] = 1"
                     continue;
                 }
 
-                var regexMatch = MemMatchRegex.Match(line);
+                var regexMatch = _memMatchRegex.Match(line);
 
                 var base10Index = long.Parse(regexMatch.Groups[1].Value);
                 var value = long.Parse(regexMatch.Groups[2].Value);
@@ -129,7 +129,7 @@ mem[26] = 1"
                     continue;
                 }
 
-                var regexMatch = MemMatchRegex.Match(line);
+                var regexMatch = _memMatchRegex.Match(line);
 
                 var index = long.Parse(regexMatch.Groups[1].Value);
                 var base10Value = long.Parse(regexMatch.Groups[2].Value);

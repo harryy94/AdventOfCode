@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using AdventOfCode.Solutions.Common;
 
@@ -14,9 +12,9 @@ namespace AdventOfCode.Solutions._2020
         }
 
         public override List<string> ExampleInput { get; }
-        = new List<string>
-        {
-            @"class: 1-3 or 5-7
+            = new List<string>
+            {
+                @"class: 1-3 or 5-7
 row: 6-11 or 33-44
 seat: 13-40 or 45-50
 
@@ -28,7 +26,7 @@ nearby tickets:
 40,4,50
 55,2,20
 38,6,12",
-            @"class: 0-1 or 4-19
+                @"class: 0-1 or 4-19
 row: 0-5 or 8-19
 seat: 0-13 or 16-19
 
@@ -39,11 +37,9 @@ nearby tickets:
 3,9,18
 15,1,5
 5,14,9"
-        };
+            };
 
-        private Regex _validationMatcher = new Regex("^([A-z| ]*): ([0-9]*)-([0-9]*) or ([0-9]*)-([0-9]*)$");
-
-        public override bool RunActual { get; set; } = true;
+        private readonly Regex _validationMatcher = new Regex("^([A-z| ]*): ([0-9]*)-([0-9]*) or ([0-9]*)-([0-9]*)$");
 
         protected override void DoSolve(string input)
         {

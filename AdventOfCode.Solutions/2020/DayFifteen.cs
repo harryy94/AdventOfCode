@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace AdventOfCode.Solutions._2020
 {
@@ -22,8 +20,6 @@ namespace AdventOfCode.Solutions._2020
                 "3,2,1",
                 "3,1,2"
             };
-
-        public override bool RunActual { get; set; } = true;
 
         protected override void DoSolve(string input)
         {

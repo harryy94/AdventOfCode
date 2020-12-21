@@ -30,7 +30,7 @@ BBFFBBFRLL"
             foreach (var rowCode in input.Split('\n'))
             {
                 var seatCode = DecodeSeatBinary(rowCode);
-                //Console.WriteLine(seatCode);
+
                 if (seatCode != null)
                 {
                     resultList.Add(seatCode);
@@ -47,7 +47,6 @@ BBFFBBFRLL"
                 {
                     if (!resultList.Any(a => a.Row == i && a.Column == j))
                     {
-                        //Console.WriteLine($"Seat {i} - {j} missing.");
                         if (result != null)
                         {
                             Console.WriteLine("Duplicate seat {i} - {j} missing.");
@@ -82,7 +81,7 @@ BBFFBBFRLL"
         }
 
         /// <summary>
-        /// Old way before I realised you could just use Binary (eye-roll).
+        /// Old way before I realised you could just use Binary.
         /// </summary>
         /// <param name="seatCode"></param>
         /// <param name="count"></param>

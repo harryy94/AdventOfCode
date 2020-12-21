@@ -69,7 +69,6 @@ namespace AdventOfCode.Solutions._2020
 
             var multipliedResult = results.Aggregate(1, (current, result) => current * result);
 
-            //PartOneAnswer = "N/A";
             PartTwoAnswer = multipliedResult.ToString();
         }
 
@@ -118,11 +117,5 @@ namespace AdventOfCode.Solutions._2020
 
             return newList;
         }
-    }
-
-    public class Grid
-    {
-
-        public bool Tree { get; }
     }
 }

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using StringSplitOptions = System.StringSplitOptions;
 
 namespace AdventOfCode.Solutions._2020
@@ -30,8 +28,6 @@ namespace AdventOfCode.Solutions._2020
             foreach (var password in passwords)
             {
                 var validation = GetValidation(password);
-
-              //  Console.WriteLine($"Min: {validation.Min}, Max: {validation.Max}, Checking {validation.Password} for {validation.CharCheck}");
 
                 var charCheck = validation.Password.Count(x => x == validation.CharCheck);
 
