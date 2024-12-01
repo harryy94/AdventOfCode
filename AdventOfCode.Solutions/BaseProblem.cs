@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Net;
+using System.Net.Http;
 
 namespace AdventOfCode.Solutions
 {
@@ -89,10 +89,12 @@ namespace AdventOfCode.Solutions
             //Get from AoC
             string input;
 
-            using (var client = new WebClient())
+            using (var client = new HttpClient())
             {
-                client.Headers.Add(HttpRequestHeader.Cookie, Configuration.Cookie);
-                input = client.DownloadString($"{Configuration.BaseUrl}/{Year}/day/{Day}/input");
+                var request = new HttpRequestMessage(HttpMethod.Get, $"{Configuration.BaseUrl}/{Year}/day/{Day}/input");
+                request.Headers.Add("Cookie", Configuration.Cookie);
+                var response = client.Send(request);
+                input = response.Content.ReadAsStringAsync().Result;
             }
 
             File.WriteAllText(dir, input);
