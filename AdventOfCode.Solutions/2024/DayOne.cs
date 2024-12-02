@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using AdventOfCode.Solutions.Common;
@@ -50,14 +51,7 @@ public class DayOne : BaseProblem
             var timesInRightList = listB.Count(x => x == listA[i]);
             runningSimilarity += listA[i] * timesInRightList;
             
-            if (listB[i] < listA[i])
-            {
-                runningResult += listA[i] - listB[i];
-            }
-            else
-            {
-                runningResult += listB[i] - listA[i];
-            }
+            runningResult += Math.Abs(listA[i] - listB[i]);
         }
 
         PartOneAnswer = runningResult.ToString();
