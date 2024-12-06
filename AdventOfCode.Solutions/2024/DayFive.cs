@@ -66,23 +66,14 @@ public class DayFive : BaseProblem
             {
                 var split = splitInput.Split("|");
                 
-                var rule1 = rules.FirstOrDefault(x => x.Number == int.Parse(split[0]));
-                if (rule1 == null)
+                var rule = rules.FirstOrDefault(x => x.Number == int.Parse(split[0]));
+                if (rule == null)
                 {
-                    rule1 = new PrintRule(int.Parse(split[0]));
-                    rules.Add(rule1);
+                    rule = new PrintRule(int.Parse(split[0]));
+                    rules.Add(rule);
                 }
                 
-                rule1.MustBePrintedAfter.Add(int.Parse(split[1]));
-                
-                var rule2 = rules.FirstOrDefault(x => x.Number == int.Parse(split[1]));
-                if (rule2 == null)
-                {
-                    rule2 = new PrintRule(int.Parse(split[1]));
-                    rules.Add(rule2);
-                }
-                
-                rule2.MustBePrintedBefore.Add(int.Parse(split[0]));
+                rule.MustBePrintedAfter.Add(int.Parse(split[1]));
             }
             else if (counter == 1)
             {
@@ -97,64 +88,61 @@ public class DayFive : BaseProblem
 
         var partOnePrintsSuccessful = 0;
         
+        var successfulPrints = new List<List<int>>();
         var failedPrints = new List<List<int>>();
         
         foreach (var printStream in prints)
         {
-            var printSuccess = true;
-            var alreadyPrinted = new List<int>();
-            foreach (var print in printStream)
+            var correctOrder = CalculatePrintFromRules(rules, printStream);
+
+            var successful = true;
+            for (var i = 0; i < correctOrder.Count; i++)
             {
-                var rule = rules.SingleOrDefault(x => x.Number == print);
-
-                if (rule == null)
+                if (correctOrder[i] != printStream[i])
                 {
-                    continue;
-                }
-
-                var relevantAfterRules = rule.MustBePrintedAfter.Join(printStream, x => x, x => x, (x, y) => x).ToList();
-                
-                if (alreadyPrinted.Any(x => relevantAfterRules.Contains(x)))
-                {
-                    printSuccess = false;
+                    successful = false;
                     break;
                 }
-                
-                alreadyPrinted.Add(print);
             }
-
-            if (printSuccess)
+            
+            if (successful)
             {
-                partOnePrintsSuccessful += printStream[printStream.Count / 2];
+                successfulPrints.Add(printStream);
             }
             else
             {
                 failedPrints.Add(printStream);
             }
         }
-        
-        PartOneAnswer = partOnePrintsSuccessful.ToString();
-        
-        var partTwoPrintsSuccessful = 0;
-        foreach (var failedPrint in failedPrints)
+
+        PartOneAnswer = successfulPrints.Sum(x => x[x.Count / 2]).ToString();
+
+        var fixedFailedPrints =
+            failedPrints
+                .Select(failedPrint => CalculatePrintFromRules(rules, failedPrint))
+                .ToList();
+
+        PartTwoAnswer = fixedFailedPrints.Sum(x => x[x.Count / 2]).ToString();
+    }
+
+    private List<int> CalculatePrintFromRules(List<PrintRule> rules, List<int> numbers)
+    {
+        var newOrder = new List<(int number, int howManyRules)>();
+        foreach (var number in numbers)
         {
-            var newOrder = new List<(int number, int howManyRules)>();
-            foreach (var number in failedPrint)
-            {
-                var rule = rules.Single(x => x.Number == number);
+            var rule = rules.SingleOrDefault(x => x.Number == number);
                 
-                var relevantAfterRules = rule.MustBePrintedAfter.Join(failedPrint, x => x, x => x, (x, y) => x).ToList();
+            rule ??= new PrintRule(number);
                 
-                newOrder.Add((number, relevantAfterRules.Count));
-            }
-
-            newOrder = newOrder.OrderBy(x => x.howManyRules).ToList();
-            partTwoPrintsSuccessful += newOrder[newOrder.Count / 2].number;
+            var relevantAfterRules = rule.MustBePrintedAfter.Join(numbers, x => x, x => x, (x, y) => x).ToList();
+                
+            newOrder.Add((number, relevantAfterRules.Count));
         }
-        
-        PartTwoAnswer = partTwoPrintsSuccessful.ToString();
 
-        Console.WriteLine("Got input");
+        return newOrder
+            .OrderByDescending(x => x.howManyRules)
+            .Select(x => x.number)
+            .ToList();
     }
 
     private class PrintRule
@@ -167,7 +155,5 @@ public class DayFive : BaseProblem
         public int Number { get; set; }
 
         public HashSet<int> MustBePrintedAfter { get; } = new();
-        
-        public HashSet<int> MustBePrintedBefore { get; } = new();
     }
 }
