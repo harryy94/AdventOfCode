@@ -35,7 +35,7 @@ public class DaySix : BaseProblem
         
         Run(grid);
         
-        PartOneAnswer = (grid.FindChars('X').Count + 1).ToString();
+        PartOneAnswer = grid.FindChars('X').Count.ToString();
 
         var infiniteLoops = 0;
         for (var y = 0; y < grid.Height; y++)
@@ -85,6 +85,7 @@ public class DaySix : BaseProblem
             if (neighbour == null)
             {
                 // Run off the map
+                grid[mainCharCoords.X, mainCharCoords.Y] = 'X';
                 return false;
             }
 
