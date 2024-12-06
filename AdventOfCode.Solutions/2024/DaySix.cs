@@ -4,12 +4,8 @@ using AdventOfCode.Solutions.Common;
 
 namespace AdventOfCode.Solutions._2024;
 
-public class DaySix : BaseProblem
+public class DaySix() : BaseProblem(2024, 6)
 {
-    public DaySix() : base(2024, 6)
-    {
-    }
-
     public override bool RunActual { get; set; } = true;
     
     public override List<string> ExampleInput { get; } =
@@ -56,8 +52,6 @@ public class DaySix : BaseProblem
         }
         
         PartTwoAnswer = infiniteLoops.ToString();
-
-        //grid.PrintToConsole();
     }
 
     private bool Run(AoC2DGrid grid)
@@ -66,13 +60,10 @@ public class DaySix : BaseProblem
 
         var direction = Direction.Up;
         
-        var loopBreaker = 100000;
-        while (loopBreaker > 0)
+        var alreadyBeenSet = new HashSet<GridTrackEntry>();
+        
+        while (true)
         {
-            //Console.Clear();
-            //grid.PrintToConsole();
-            loopBreaker--;
-
             var neighbour = direction switch
             {
                 Direction.Up => grid.FindNeighbourAbove(mainCharCoords.X, mainCharCoords.Y),
@@ -81,6 +72,13 @@ public class DaySix : BaseProblem
                 Direction.Right => grid.FindNeighbourRight(mainCharCoords.X, mainCharCoords.Y),
                 _ => throw new ArgumentOutOfRangeException()
             };
+
+            var set = new GridTrackEntry(mainCharCoords.X, mainCharCoords.Y, direction);
+            
+            if (!alreadyBeenSet.Add(set))
+            {
+                return true;
+            }
 
             if (neighbour == null)
             {
@@ -106,6 +104,8 @@ public class DaySix : BaseProblem
 
         return true;
     }
+
+    private record struct GridTrackEntry(int x, int y, Direction direction);
     
     private enum Direction
     {

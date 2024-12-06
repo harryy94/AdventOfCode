@@ -5,12 +5,8 @@ using AdventOfCode.Solutions.Common;
 
 namespace AdventOfCode.Solutions._2024;
 
-public class DayOne : BaseProblem
+public class DayOne() : BaseProblem(2024, 1)
 {
-    public DayOne() : base(2024, 1)
-    {
-    }
-
     public override bool RunActual => true;
 
     public override List<string> ExampleInput { get; } = new()

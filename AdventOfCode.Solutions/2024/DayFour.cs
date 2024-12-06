@@ -1,15 +1,10 @@
 using System.Collections.Generic;
-using System.Linq;
 using AdventOfCode.Solutions.Common;
 
 namespace AdventOfCode.Solutions._2024;
 
-public class DayFour : BaseProblem
+public class DayFour() : BaseProblem(2024, 4)
 {
-    public DayFour() : base(2024, 4)
-    {
-    }
-    
     public override List<string> ExampleInput { get; }
         = new()
         {

@@ -1,16 +1,11 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using AdventOfCode.Solutions.Common;
 
 namespace AdventOfCode.Solutions._2024;
 
-public class DayFive : BaseProblem
+public class DayFive() : BaseProblem(2024, 5)
 {
-    public DayFive() : base(2024, 5)
-    {
-    }
-
     public override bool RunActual { get; set; } = true;
 
     public override List<string> ExampleInput { get; }
@@ -145,14 +140,9 @@ public class DayFive : BaseProblem
             .ToList();
     }
 
-    private class PrintRule
+    private class PrintRule(int number)
     {
-        public PrintRule(int number)
-        {
-            Number = number;
-        }
-        
-        public int Number { get; set; }
+        public int Number { get; set; } = number;
 
         public HashSet<int> MustBePrintedAfter { get; } = new();
     }

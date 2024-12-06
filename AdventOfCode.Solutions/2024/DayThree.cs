@@ -4,12 +4,8 @@ using AdventOfCode.Solutions.Common;
 
 namespace AdventOfCode.Solutions._2024;
 
-public class DayThree : BaseProblem
+public class DayThree() : BaseProblem(2024, 3)
 {
-    public DayThree() : base(2024, 3)
-    {
-    }
-
     public override bool RunExamples { get; set; } = true;
 
     public override List<string> ExampleInput { get; }
