@@ -27,23 +27,13 @@ MXMXAXMASX
         };
     protected override void DoSolve(string input)
     {
-        var lines = input.SplitByLine()
-            .Where(x => x.Length > 0)
-            .ToList();
+        var lines = input.SplitByLine();
 
         var horizontalLength = lines[0].Length;
         var verticalLength = lines.Count;
+
+        var grid = AoC2DGrid.CreateWithLineInput(lines);
         
-        var grid = new char[horizontalLength, verticalLength];
-
-        for (var y = 0; y < verticalLength; y++)
-        {
-            for (var x = 0; x < horizontalLength; x++)
-            {
-                grid[x, y] = lines[y][x];
-            }
-        }
-
         var resultsFoundPartOne = 0;
         var resultsFoundPartTwo = 0;
 
@@ -51,9 +41,9 @@ MXMXAXMASX
         {
             for (var x = 0; x < horizontalLength; x++)
             {
-                resultsFoundPartOne += ScanPartOne(grid, horizontalLength, verticalLength, x, y);
+                resultsFoundPartOne += ScanPartOne(grid, x, y);
 
-                if (ScanPartTwo(grid, horizontalLength, verticalLength, x, y))
+                if (ScanPartTwo(grid, x, y))
                 {
                     resultsFoundPartTwo++;
                 }
@@ -64,14 +54,14 @@ MXMXAXMASX
         PartTwoAnswer = resultsFoundPartTwo.ToString();
     }
 
-    private bool ScanPartTwo(char[,] grid, int horizontalLength, int verticalLength, int x, int y)
+    private bool ScanPartTwo(AoC2DGrid grid, int x, int y)
     {
         if (grid[x, y] != 'A')
         {
             return false;
         }
         
-        if (x - 1 < 0 || x + 1 >= horizontalLength || y - 1 < 0 || y + 1 >= verticalLength)
+        if (x - 1 < 0 || x + 1 >= grid.Width || y - 1 < 0 || y + 1 >= grid.Height)
         {
             // Out of bounds
             return false;
@@ -92,7 +82,7 @@ MXMXAXMASX
         return true;
     }
     
-    private int ScanPartOne(char[,] grid, int horizontalLength, int verticalLength, int x, int y)
+    private int ScanPartOne(AoC2DGrid grid, int x, int y)
     {
         var resultsFound = 0;
         if (grid[x, y] != 'X')
@@ -111,7 +101,7 @@ MXMXAXMASX
         }
         
         // Top right
-        if (y - 3 >= 0 && x + 3 < horizontalLength &&
+        if (y - 3 >= 0 && x + 3 < grid.Width &&
             grid[x + 1, y - 1] == 'M' && 
             grid[x + 2, y - 2] == 'A' && 
             grid[x + 3, y - 3] == 'S')
@@ -120,7 +110,7 @@ MXMXAXMASX
         }
         
         // Right
-        if (x + 3 < horizontalLength &&
+        if (x + 3 < grid.Width &&
             grid[x + 1, y] == 'M' && 
             grid[x + 2, y] == 'A' && 
             grid[x + 3, y] == 'S')
@@ -129,7 +119,7 @@ MXMXAXMASX
         }
         
         // Bottom right
-        if (y + 3 < verticalLength && x + 3 < horizontalLength &&
+        if (y + 3 < grid.Height && x + 3 < grid.Width &&
             grid[x + 1, y + 1] == 'M' && 
             grid[x + 2, y + 2] == 'A' && 
             grid[x + 3, y + 3] == 'S')
@@ -138,7 +128,7 @@ MXMXAXMASX
         }
         
         // Bottom
-        if (y + 3 < verticalLength &&
+        if (y + 3 < grid.Height &&
             grid[x, y + 1] == 'M' && 
             grid[x, y + 2] == 'A' && 
             grid[x, y + 3] == 'S')
@@ -147,7 +137,7 @@ MXMXAXMASX
         }
         
         // Bottom left
-        if (y + 3 < verticalLength && x - 3 >= 0 &&
+        if (y + 3 < grid.Height && x - 3 >= 0 &&
             grid[x - 1, y + 1] == 'M' && 
             grid[x - 2, y + 2] == 'A' && 
             grid[x - 3, y + 3] == 'S')

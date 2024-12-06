@@ -127,10 +127,15 @@ public class AoC2DGrid
         };
     }
 
-    public GridEntry? FindNeighbourAbove(int x, int y) => FindNeighbour(x, y, 0, -1);
-    public GridEntry? FindNeighbourBelow(int x, int y)=> FindNeighbour(x, y, 0, 1);
-    public GridEntry? FindNeighbourLeft(int x, int y)=> FindNeighbour(x, y, -1, 0);
-    public GridEntry? FindNeighbourRight(int x, int y)=> FindNeighbour(x, y, 1, 0);
+    public GridEntry? FindNeighbourAbove(int x, int y, int offset = 1) => FindNeighbour(x, y, 0, -offset);
+    public GridEntry? FindNeighbourAboveRight(int x, int y, int offset = 1)=> FindNeighbour(x, y, offset, -offset);
+    public GridEntry? FindNeighbourRight(int x, int y, int offset = 1)=> FindNeighbour(x, y, offset, 0);
+    public GridEntry? FindNeighbourBelowRight(int x, int y, int offset = 1)=> FindNeighbour(x, y, offset, offset);
+    public GridEntry? FindNeighbourBelow(int x, int y, int offset = 1)=> FindNeighbour(x, y, 0, offset);
+    public GridEntry? FindNeighbourBelowLeft(int x, int y, int offset = 1)=> FindNeighbour(x, y, -offset, offset);
+    public GridEntry? FindNeighbourLeft(int x, int y, int offset = 1)=> FindNeighbour(x, y, -offset, 0);
+    public GridEntry? FindNeighbourAboveLeft(int x, int y, int offset = 1)=> FindNeighbour(x, y, -offset, -offset);
+    
 
     public void PrintToConsole()
     {
