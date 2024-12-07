@@ -31,5 +31,35 @@ namespace AdventOfCode.Solutions.Common
 
             return list.Select(x => x.Replace("\r", "")).ToList();
         }
+
+        public static string ConvertToBase(this int base10, int baseToConvert)
+        {
+            const int bitsInLong = 64;
+            const string digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+            if (base10 == 0)
+            {
+                return "0";
+            }
+
+            var index = bitsInLong - 1;
+            long currentNumber = Math.Abs(base10);
+            var charArray = new char[bitsInLong];
+
+            while (currentNumber != 0)
+            {
+                int remainder = (int)(currentNumber % baseToConvert);
+                charArray[index--] = digits[remainder];
+                currentNumber /= baseToConvert;
+            }
+
+            var result = new string(charArray, index + 1, bitsInLong - index - 1);
+            if (base10 < 0)
+            {
+                result = "-" + result;
+            }
+
+            return result;
+        }
     }
 }
