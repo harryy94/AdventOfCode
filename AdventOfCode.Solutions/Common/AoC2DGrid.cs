@@ -26,12 +26,12 @@ public class AoC2DGrid
         }
     }
     
-    public static AoC2DGrid CreateWithLineInput(List<string> fillChar)
+    public static AoC2DGrid CreateWithLineInput(List<string> lineInput)
     {
-        fillChar = fillChar.Where(x => x.Length > 0).ToList();
+        lineInput = lineInput.Where(x => x.Length > 0).ToList();
         
-        var height = fillChar.Count;
-        var width = fillChar[0].Length;
+        var height = lineInput.Count;
+        var width = lineInput[0].Length;
         
         var grid = new AoC2DGrid(width, height);
         
@@ -39,7 +39,7 @@ public class AoC2DGrid
         {
             for (var x = 0; x < width; x++)
             {
-                grid[x, y] = fillChar[y][x];
+                grid[x, y] = lineInput[y][x];
             }
         }
 

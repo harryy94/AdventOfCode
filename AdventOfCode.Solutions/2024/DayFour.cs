@@ -24,17 +24,14 @@ MXMXAXMASX
     {
         var lines = input.SplitByLine();
 
-        var horizontalLength = lines[0].Length;
-        var verticalLength = lines.Count;
-
         var grid = AoC2DGrid.CreateWithLineInput(lines);
         
         var resultsFoundPartOne = 0;
         var resultsFoundPartTwo = 0;
 
-        for (var y = 0; y < verticalLength; y++)
+        for (var y = 0; y < grid.Height; y++)
         {
-            for (var x = 0; x < horizontalLength; x++)
+            for (var x = 0; x < grid.Width; x++)
             {
                 resultsFoundPartOne += ScanPartOne(grid, x, y);
 
@@ -91,7 +88,6 @@ MXMXAXMASX
             grid[x, y - 2] == 'A' && 
             grid[x, y - 3] == 'S')
         {
-           // Console.WriteLine("Above found");
             resultsFound++;
         }
         
