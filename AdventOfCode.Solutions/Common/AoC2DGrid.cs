@@ -51,6 +51,8 @@ public class AoC2DGrid
         get => _grid[x, y];
         set => _grid[x, y] = value;
     }
+
+    public bool IsInBounds(int x, int y) => x >= 0 && x < Width && y >= 0 && y < Height;
     
     public GridEntry Swap(int x1, int y1, int x2, int y2)
     {
