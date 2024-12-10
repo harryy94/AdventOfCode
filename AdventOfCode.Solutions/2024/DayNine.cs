@@ -42,21 +42,106 @@ public class DayNine() : BaseProblem(2024, 9)
                 }
             }
         }
+        
+        PartOneAnswer = SolvePartOne(memoryList).ToString();
+        PartTwoAnswer = SolvePartTwo(memoryList).ToString();
+    }
 
-        var memoryPartOne = new List<int?>(memoryList);
-        var runningLength = memoryList.Count;
+    private long SolvePartTwo(List<int?> initialMemoryList)
+    {
+        var memoryList = new List<int?>(initialMemoryList);
+        var index = memoryList.Count - 1;
+        
+        while (index > 0)
+        {
+            if (memoryList[index] == null)
+            {
+                index--;
+                continue;
+            }
+
+            var numbersToMove = 0;
+            while (memoryList[index - numbersToMove] == memoryList[index])
+            {
+                numbersToMove++;
+                
+                if (index - numbersToMove < 0)
+                {
+                    break;
+                }
+            }
+
+            var freeSpaceIndex = 0;
+            var freeSpaceCount = 0;
+            
+            var foundFreeSpace = false;
+            while (freeSpaceIndex < index)
+            {
+                if (memoryList[freeSpaceIndex] == null)
+                {
+                    freeSpaceCount++;
+                    
+                    if (freeSpaceCount == numbersToMove)
+                    {
+                        foundFreeSpace = true;
+                        break;
+                    }
+                }
+                else
+                {
+                    freeSpaceCount = 0;
+                }
+
+                freeSpaceIndex++;
+            }
+
+            if (foundFreeSpace)
+            {
+                freeSpaceIndex -= numbersToMove;
+                for (var i = 0; i < numbersToMove; i++)
+                {
+                    memoryList[freeSpaceIndex + i + 1] = memoryList[index];
+                    memoryList[index] = null;
+                    index--;
+                }
+
+                continue;
+            }
+
+            index -= numbersToMove;
+        }
+        
+        long runningTotal = 0;
+        for (var i = 0; i < memoryList.Count; i++)
+        {
+            if (memoryList[i] == null)
+            {
+                continue;
+            }
+
+            runningTotal += i * (int)memoryList[i];
+        }
+
+        return runningTotal;
+    }
+    
+
+    private long SolvePartOne(List<int?> initialMemoryList)
+    {
+        var memoryList = new List<int?>(initialMemoryList);
+        var runningLength = memoryList.Count - 1;
         var counter = 0;
         while (counter < runningLength)
         {
-            if (memoryPartOne[counter] == null)
+            if (memoryList[counter] == null)
             {
-                while (memoryPartOne[runningLength - 1] == null)
+                while (memoryList[runningLength] == null)
                 {
                     runningLength--;
                 }
-
-                memoryPartOne[counter] = memoryPartOne[runningLength - 1];
-                memoryPartOne[runningLength - 1] = null;
+                
+                memoryList[counter] = memoryList[runningLength];
+                memoryList[runningLength] = null;
 
                 runningLength--;
             }
@@ -65,68 +150,16 @@ public class DayNine() : BaseProblem(2024, 9)
         }
         
         long runningTotal = 0;
-        for (var i = 0; i < memoryPartOne.Count; i++)
+        for (var i = 0; i < memoryList.Count; i++)
         {
-            if (memoryPartOne[i] == null)
+            if (memoryList[i] == null)
             {
                 continue;
             }
 
-            runningTotal += i * (int)memoryPartOne[i];
+            runningTotal += i * (int)memoryList[i];
         }
-        
-        //00...111...2...333.44.5555.6666.777.888899
-        //0099811188827773336446555566
-        
-        // foreach (var i in memoryPartTwo)
-        // {
-        //     Console.Write(i == null ? "." : i.ToString());
-        // }
-        
-        PartOneAnswer = runningTotal.ToString();
-        PartTwoAnswer = "0";
+
+        return runningTotal;
     }
 }
-
-
-
-
-
-
-// var partOneString = sbFull.ToString();
-// var runningLength = partOneString.Length;
-// var counter = 0;
-// var part1ResultBuilder = new StringBuilder();
-// while (counter < runningLength)
-// {
-//     if (partOneString[counter] == '.')
-//     {
-//         while (partOneString[runningLength - 1] == '.')
-//         {
-//             runningLength--;
-//         }
-//         
-//         part1ResultBuilder.Append(partOneString[runningLength - 1]);
-//
-//         runningLength--;
-//     }
-//     else
-//     {
-//         part1ResultBuilder.Append(partOneString[counter]);
-//     }
-//
-//     counter++;
-// }
-// var part1Result = part1ResultBuilder.ToString();
-// long runningTotal = 0;
-// for (var i = 0; i < part1Result.Length; i++)
-// {
-//     if (part1Result[i] == '.')
-//     {
-//         continue;
-//     }
-//     
-//     var add =((int)part1Result[i]) >= 46 ? (int)part1Result[i] - 1 : (int)part1Result[i];
-//     
-//     runningTotal += i * (int)part1Result[i];
-// }
